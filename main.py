@@ -1,11 +1,3 @@
-# TODO Сделать программу которая бы по ID MEROPS или по названию семейства вставлялая столбец с это информацией
-# TODO 1) Понять как лучше искать инфу
-# TODO 2) Понять как лучше ее извлекать из источника
-# TODO 3)  В целом там просто путь одинаковый для каждого из семейств:
-
-# https://www.ebi.ac.uk/merops/cgi-bin/famsum?family=M85
-# https://www.ebi.ac.uk/merops/cgi-bin/famsum?family=C113
-
 import pandas as pd
 import requests as re
 import argparse
@@ -49,7 +41,6 @@ def pad_dict_list(dict_list, padel):
 
 
 def downloader_lst(familis):
-
     nested_fam_list = []
     for fm in tqdm(familis, colour='green'):
         try:
@@ -74,7 +65,7 @@ def downloader_lst(familis):
 
                 for j in list_data:
                     pre_lst.append(j[1])
-                nested_fam_list.append([str(fm), pre_lst])
+                nested_fam_list.append([str(f'{fm} -- {url}'), pre_lst])
 
             else:
                 nested_fam_list.append('')
@@ -82,7 +73,6 @@ def downloader_lst(familis):
             print(f'{fm} -- ERROR')
 
     pre_dict = dict(nested_fam_list)
-
     pre_dict['Name'] = ['Family type peptidase',
                          'Content of family',
                          'History',
@@ -94,12 +84,13 @@ def downloader_lst(familis):
                          'Clan',
                          'Basis of clan assignment',
                          'Biological functions',
-                         'Active site residues']
+                         'Active site residues',]
 
     diction = pad_dict_list(pre_dict, padel='')
     df1 = pd.DataFrame.from_dict(diction)
     df1 = df1.set_index('Name')
-    return df1
+    df1_transpose = df1.transpose()
+    return df1_transpose
 
 
 def downloader_tab(table):
